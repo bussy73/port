@@ -1,0 +1,60 @@
+SELECT * FROM "vac_Girl"
+
+Select location, date, total_cases,new_cases, total_deaths,population
+From vac
+order by 1,2
+
+--first task(Total cases vs total deaths) in Africa
+SELECT location, date, total_cases, total_deaths, 
+       (total_deaths::numeric / NULLIF(total_cases::numeric, 0))*100 as death_rate
+FROM vac
+WHERE location = 'Africa'
+ORDER BY location, date;
+
+--second task(Total cases vs population)in Africa
+SELECT location, date, total_cases, population, 
+       (total_cases::numeric / NULLIF(population::numeric, 0))*100 as pop 
+FROM vac
+WHERE location = 'Africa'
+ORDER BY location, date;
+
+--Third task(country with the highest infection rate compared to population)
+SELECT location, population, max(total_cases)as Highestinfcount,  
+      max (total_cases::numeric / NULLIF(population::numeric, 0))*100 as pop 
+FROM vac
+Group by location, population
+ORDER BY pop desc NULLS LAST
+
+--Fourth task(Country with the lowest infection rate compared to population)
+SELECT location, population, min(total_cases)as lowestinfcount,  
+      min (total_cases::numeric / NULLIF(population::numeric, 0))*100 as pop 
+FROM vac
+Group by location, population
+ORDER BY pop desc NULLS LAST
+
+
+--Fifth task(Highest death count per population)Not sure I got this right
+SELECT location, population, total_deaths   
+FROM vac
+Where continent is not null
+Group by location, population, total_deaths
+order by total_deaths desc nulls last
+--ORDER BY maxydeath desc Nulls last
+
+--Sixth task(Highest death count per continent)
+SELECT continent, MAX(CAST(total_deaths AS numeric)) AS Tdeath
+FROM vac
+WHERE continent IS NOT NULL
+  AND total_deaths IS NOT NULL
+GROUP BY continent
+ORDER BY Tdeath DESC;
+
+--Seventh task(Continent with the highest death count per population)
+SELECT continent, SUM(population:: numeric) AS total_population, MAX(CAST(total_deaths AS numeric)) AS Tdeath
+FROM vac
+WHERE continent IS NOT NULL
+  AND total_deaths IS NOT NULL
+GROUP BY continent
+ORDER BY Tdeath DESC;
+
+insert table 
